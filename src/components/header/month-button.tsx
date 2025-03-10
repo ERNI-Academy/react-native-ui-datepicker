@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
 import dayjs from 'dayjs';
+import React, { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useCalendarContext } from '../../calendar-context';
 
@@ -12,6 +12,7 @@ const MonthButton = () => {
     styles,
     classNames,
     disableMonthPicker,
+    viewMode,
     monthCaptionFormat,
   } = useCalendarContext();
 
@@ -21,7 +22,7 @@ const MonthButton = () => {
 
   return (
     <Pressable
-      disabled={disableMonthPicker}
+      disabled={disableMonthPicker || (viewMode && calendarView === 'month')}
       onPress={() =>
         setCalendarView(calendarView === 'month' ? 'day' : 'month')
       }

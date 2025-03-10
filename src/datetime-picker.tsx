@@ -1,3 +1,10 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import localeData from 'dayjs/plugin/localeData';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import React, {
   useCallback,
   useEffect,
@@ -5,39 +12,32 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
-import {
-  dateToUnix,
-  getEndOfDay,
-  getStartOfDay,
-  areDatesOnSameDay,
-  removeTime,
-} from './utils';
 import { CalendarContext } from './calendar-context';
+import Calendar from './components/calendar';
 import {
-  CalendarViews,
   CalendarActionKind,
+  CalendarViews,
   CONTAINER_HEIGHT,
   WEEKDAYS_HEIGHT,
 } from './enums';
-import type {
-  DateType,
-  CalendarAction,
-  LocalState,
-  DatePickerBaseProps,
-  SingleChange,
-  RangeChange,
-  MultiChange,
-} from './types';
-import Calendar from './components/calendar';
-import { useDeepCompareMemo } from './utils';
-import dayjs from 'dayjs';
-import localeData from 'dayjs/plugin/localeData';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-import duration from 'dayjs/plugin/duration';
 import { usePrevious } from './hooks/use-previous';
+import type {
+  CalendarAction,
+  DatePickerBaseProps,
+  DateType,
+  LocalState,
+  MultiChange,
+  RangeChange,
+  SingleChange,
+} from './types';
+import {
+  areDatesOnSameDay,
+  dateToUnix,
+  getEndOfDay,
+  getStartOfDay,
+  removeTime,
+  useDeepCompareMemo,
+} from './utils';
 
 dayjs.extend(localeData);
 dayjs.extend(relativeTime);
@@ -104,6 +104,7 @@ const DateTimePicker = (
     hideWeekdays,
     disableMonthPicker,
     disableYearPicker,
+    viewMode,
     components = {},
     month,
     year,
@@ -506,9 +507,9 @@ const DateTimePicker = (
         type: CalendarActionKind.CHANGE_CURRENT_DATE,
         payload: newDate,
       });
-      setCalendarView('day');
+      !viewMode && setCalendarView('day');
     },
-    [setCalendarView, onMonthChange]
+    [setCalendarView, onMonthChange, viewMode]
   );
 
   // set the active displayed year
@@ -526,9 +527,13 @@ const DateTimePicker = (
         type: CalendarActionKind.CHANGE_CURRENT_DATE,
         payload: newDate,
       });
-      setCalendarView('day');
+      if (!viewMode) {
+        setCalendarView('day');
+      } else if (viewMode === 'month') {
+        setCalendarView('month');
+      }
     },
-    [setCalendarView, onYearChange]
+    [viewMode, setCalendarView, state.calendarView, onYearChange]
   );
 
   const onChangeMonth = useCallback(
@@ -602,6 +607,7 @@ const DateTimePicker = (
       hideWeekdays,
       disableMonthPicker,
       disableYearPicker,
+      viewMode,
       style,
       className,
       use12Hours,
@@ -630,6 +636,7 @@ const DateTimePicker = (
       hideWeekdays,
       disableMonthPicker,
       disableYearPicker,
+      viewMode,
       style,
       className,
       use12Hours,

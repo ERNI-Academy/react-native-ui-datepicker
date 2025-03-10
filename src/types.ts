@@ -1,13 +1,13 @@
 import type { Dayjs } from 'dayjs';
-import type { CalendarActionKind, CalendarViews } from './enums';
 import type { TextStyle, ViewStyle } from 'react-native';
+import type { CalendarActionKind, CalendarViews } from './enums';
 import {
-  UI,
-  SelectionState,
+  CalenderFlag,
   DayFlag,
   MonthState,
+  SelectionState,
+  UI,
   YearState,
-  CalenderFlag,
 } from './ui';
 
 export type DateType = string | number | Dayjs | Date | null | undefined;
@@ -165,6 +165,13 @@ export interface DatePickerBaseProps {
   hideWeekdays?: boolean;
   disableMonthPicker?: boolean;
   disableYearPicker?: boolean;
+  /**
+   * Controls which view to lock the calendar to.
+   * - 'month': Calendar will only allow month and year selection
+   * - 'year': Calendar will only allow year selection
+   * - undefined: Calendar allows switching between day, month, and year views
+   */
+  viewMode?: 'month' | 'year';
   components?: CalendarComponents;
   /** use to handle month and year selectors */
   month?: number;
